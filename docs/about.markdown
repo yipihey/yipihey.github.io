@@ -1,10 +1,9 @@
 ---
 layout: page
-title: About
+title: Personal Webpage
 permalink: /about/
 ---
 
-## Tom Abel
 Professor of Physics and Astrophysics  
 Kavli Institute for Particle Astrophysics and Cosmology  
 SLAC National Accelerator Laboratory and the  
