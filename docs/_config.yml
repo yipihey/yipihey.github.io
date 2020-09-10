@@ -18,7 +18,8 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Tom Abel
+title: Home
+author: Tom Abel
 email: tabel@stanford.edu
 description: >- # this means to ignore newlines until "baseurl:"
   Adventures in Computational Astrophysics, Cosmology and Education
