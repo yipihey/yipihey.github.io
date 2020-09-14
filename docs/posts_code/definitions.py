@@ -1,13 +1,13 @@
 #%%
 from scipy import stats
 import numpy as np
+import scipy.spatial as sptl
+import scipy.integrate
 import matplotlib
 import matplotlib.pyplot as plt
 plt.style.use('./Modified5308.mplstyle') 
 figtransparent = 0
 
-import scipy.spatial as sptl
-import scipy.integrate
 
 # %%
 def peaked(y):

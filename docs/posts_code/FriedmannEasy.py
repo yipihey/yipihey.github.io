@@ -1,5 +1,10 @@
 # %% 
-from definitions import *
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+plt.style.use('./Modified5308.mplstyle') 
+figtransparent = 0
+
 h = 0.7
 Mpc = 3.086e24
 H100 = 100*1e5/Mpc
@@ -10,7 +15,7 @@ rhocrit = 3*H0**2/(8*np.pi*G)
 k = 0
 R_c = 10e3 * Mpc  # 10 Gpc
 
-class cosmo:
+class flat_cosmo:
     """Keep parameters for a flat Universe
     H0 = Hubble constant today: in km/s/Mpc
     Om0: Omega_matter at current time
@@ -21,10 +26,6 @@ class cosmo:
         self.Om0 = params['Om0']
         self.OL0 = 1.0 - self.Om0
         
-#        print ('H0', self.H0)
-#        print ('Om0', self.Om0)
-#        print ('OL0', self.OL0)
-        
     def hubble(self,a):
         return np.sqrt(self.H0**2*(self.Om0/a**3+(1-self.Om0)))
 
@@ -33,13 +34,15 @@ class cosmo:
 
 params = {'H0':67.11, 'Om0':0.3175}
 
-u1 = cosmo( {'H0':67.11, 'Om0':0.3175})
-u2 = cosmo( {'H0':74, 'Om0':0.3175})
-u3 = cosmo( {'H0':67.11, 'Om0':0.1})
-u4 = cosmo( {'H0':67.11, 'Om0':0.5})
-universe = cosmo(params)
+u1 = flat_cosmo( {'H0':67.11, 'Om0':0.3175})
+u2 = flat_cosmo( {'H0':74, 'Om0':0.3175})
+u3 = flat_cosmo( {'H0':67.11, 'Om0':0.1})
+u4 = flat_cosmo( {'H0':67.11, 'Om0':0.5})
+universe = flat_cosmo(params)
 
 ar = np.logspace(-2,.4,400)
+
+plt.figure(figsize=(10,8))
 plt.loglog(ar,ar*u1.hubble(ar), label=r"$H_0={:.1f},\ \Omega_m$={:.2f}".format(u1.H0,u1.Om0),lw=4)
 plt.loglog(ar,ar*u2.hubble(ar), '--',label=r"$H_0={:.1f},\ \Omega_m$={:.2f}".format(u2.H0,u2.Om0),alpha=.7)
 plt.loglog(ar,ar*u3.hubble(ar), '--',label=r"$H_0={:.1f},\ \Omega_m$={:.2f}".format(u3.H0,u3.Om0),alpha=.7)
@@ -60,14 +63,13 @@ plt.savefig("../assets/Hubble-as-function-of-a.png", dpi=150,transparent=figtran
 #
 
 # %%
-from scipy.integrate import odeint
-
 def rhs(a,t,Om):
     return np.sqrt(Om/a+(1-Om)*a**2)
 a0 = [1] # at a=1 we want da/dt=1 we can later get units from H0.
 Om = 1
-t = np.linspace(0, 1.5, 19001)
+t = np.linspace(1e-6, 1.5, 19001)
 tm = -1*t
+
 sol = odeint(rhs, a0, t, args= (Om, ) )
 solb = odeint(rhs, a0, tm, args= (Om, ) )
 
@@ -101,7 +103,7 @@ plt.title("spatially flat cosmologies")
 
 plt.savefig("../assets/flat-a-of-t.png", dpi=150,transparent=figtransparent)
 # %%
-# Zoomes in version of the same plot from before
+# Zoomed-in version of the same plot from before
 plt.figure(figsize=(10,6))
 
 p1 = plt.plot(t, (odeint(rhs, a0, t , args=(u1.Om0, )))[:,0], label=r"$\Omega_m={:.2f}$".format(u1.Om0), alpha=.7)
@@ -120,9 +122,6 @@ plt.plot(tm,    (odeint(rhs, a0, tm, args=(1, )))[:,0], alpha=.7, color=p2[0].ge
 plt.plot([-2/3,-2/3],[1e-5,1e4],'--',lw=2,alpha=.5 ,color="grey",label=r"$\Omega_m=1$")
 plt.plot([0],[1],'o',ms=8,alpha=.75, color="grey", label="today")
 
-
-#plt.xscale("log")
-#plt.yscale("log")
 plt.xlim(-.66,.1)
 plt.ylim(.3,1.1)
 plt.xlabel(r"$(t-t_{today}) H_0$")
