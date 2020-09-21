@@ -50,15 +50,15 @@ $$\Omega_{k,0} = (1+z_i)\Omega_{m,0}\delta .$$
 
 To derive this we assumed that the expansion rate in our perturbed Universe is exactly the same as the one of the unperturbed. If one includes that the Hubble rate at $z_i$ where we specify $\delta$ is perturbed so that $H(z_i)=H_b(z_i)(1-\delta)$ one finds the equivalent $\Omega_{k,0}$. 
 
-$$\Omega_{k,0} = {\delta \left[ a_i^3(\delta-6)(\Omega_m-1)- (\delta-15)\Omega_m \right] \over 9 a_i}
+$$\Omega_{k,0} = {\delta \left[ a_i^3(\delta-6)(\Omega_{m,0}-1)- (\delta-15)\Omega_{m,0} \right] \over 9 a_i}
   \approx \frac{5}{3}(1+z_i)\Omega_{m,0}\delta .$$
 
 The last approximation here is very accurate as all other terms have at least order $a_i^2$ or $\delta^2$ or even smaller. 
 So we can now compare now how different the scale factors evolve in the flat background Universe as compared to the one corresponding to the one with the slight early difference in density. 
 
-We can also define the parameter describing the evolution as $\delta_0\equiv \delta(z)/a= \delta(z)*(1+z)$ so that we can write:
+We can also define the parameter describing the evolution as $\delta_0\equiv \delta(z)/a= \delta(z) (1+z)$ so that we can write:
 
-$$\Omega_{k,0} = {\delta_0 \left[ a_i^3(\delta_0/a_i-6)(\Omega_m-1)- (\delta_0/a_i-15)\Omega_m \right] \over 9}
+$$\Omega_{k,0} = {\delta_0 \left[ a_i^3(\delta_0/a_i-6)(\Omega_{m,0}-1)- (\delta_0/a_i-15)\Omega_{m,0} \right] \over 9}
   \approx \frac{5}{3}\Omega_{m,0}\delta_0.$$
 
 
