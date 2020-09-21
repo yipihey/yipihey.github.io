@@ -49,6 +49,7 @@ In terms of density parameters that tells us that the curvature corresponding to
 $$\Omega_{k,0} = (1+z_i)\Omega_{m,0}\delta .$$
 
 To derive this we assumed that the expansion rate in our perturbed Universe is exactly the same as the one of the unperturbed. If one includes that the Hubble rate at $z_i$ where we specify $\delta$ is perturbed so that $H(z_i)=H_b(z_i)(1-\delta)$ one finds the equivalent $\Omega_{k,0}$. 
+
 $$\Omega_{k,0} = {\delta \left[ a_i^3(\delta-6)(\Omega_m-1)- (\delta-15)\Omega_m \right] \over 9 a_i}
   \approx \frac{5}{3}(1+z_i)\Omega_{m,0}\delta .$$
 
