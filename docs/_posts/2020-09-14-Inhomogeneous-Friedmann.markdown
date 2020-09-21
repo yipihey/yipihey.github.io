@@ -56,3 +56,9 @@ $$\Omega_{k,0} = {\delta \left[ a_i^3(\delta-6)(\Omega_m-1)- (\delta-15)\Omega_m
 The last approximation here is very accurate as all other terms have at least order $a_i^2$ or $\delta^2$ or even smaller. 
 So we can now compare now how different the scale factors evolve in the flat background Universe as compared to the one corresponding to the one with the slight early difference in density. 
 
+We can also define the parameter describing the evolution as $\delta_0\equiv \delta(z)/a= \delta(z)*(1+z)$ so that we can write:
+
+$$\Omega_{k,0} = {\delta_0 \left[ a_i^3(\delta_0/a_i-6)(\Omega_m-1)- (\delta_0/a_i-15)\Omega_m \right] \over 9}
+  \approx \frac{5}{3}\Omega_{m,0}\delta_0.$$
+
+
