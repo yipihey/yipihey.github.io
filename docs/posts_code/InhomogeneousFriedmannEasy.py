@@ -31,7 +31,7 @@ class cosmo:
 params = {'H0':67.11, 'Om0':0.3175, 'OL0':0.6825}
 
 u1 = cosmo( {'H0':67.11, 'Om0':0.3175, 'OL0':0.6825})
-u2 = cosmo( {'H0':67.11, 'Om0':0.3175, 'OL0':0.6825})
+u2 = cosmo( {'H0':70, 'Om0':0.3175, 'OL0':0.6825})
 u3 = cosmo( {'H0':67.11, 'Om0':0.28, 'OL0':0.6825})
 u4 = cosmo( {'H0':67.11, 'Om0':0.4, 'OL0':0.6825})
 universe = cosmo(params)
@@ -59,9 +59,18 @@ plt.title("spatially flat cosmologies")
 #
 
 # %%
+def rhs_del(a,t, Om, zi, delta_opzi):
+    opzi = 1+ zi
+    ai = 1/opzi
+    Ok0 = Om*delta_opzi
+    Ok0 = (delta_opzi/opzi*(ai**3*(-6 + delta_opzi/opzi)*(-1 + Om) - (-15 + delta_opzi/opzi)*Om))/(9.*ai)
+    OL0 = 1-Om*(1+delta_opzi/opzi)-Ok0 # *(1+zi)**3
+ #   bH = rhsf(1/(1+zi), 0, Om)*
+    return np.sqrt(Om/a*(1+delta_opzi/opzi)- Ok0 + OL0*a**2) 
+
 def a_from_t_for_delta(delta, lrhs):
-    a0 = [1e-3] # at a=1 we want da/dt=1 we can later get units from H0.
-    zi = 999
+    a0 = [1e-7] # at a=1 we want da/dt=1 we can later get units from H0.
+    zi = 1/a0[0]-1
     t = np.linspace(1e-6,5, 190000)
 
     ts=t
@@ -75,38 +84,34 @@ def rhsf(a,t,Om):
     return np.sqrt(Om/a+(1-Om)*a**2)
 def rhs(a,t, Om, OL0):
     return np.sqrt(Om/a-(1-Om-OL0) + OL0*a**2)
-def rhs_del(a,t, Om, zi, delta):
-    ai = 1/(1+zi)
-    Ok0 = (1+zi)*Om*delta
-    Ok0 = (delta*(ai**3*(-6 + delta)*(-1 + Om) - (-15 + delta)*Om))/(9.*ai)
-    OL0 = 1-Om-Ok0 # *(1+zi)**3
- #   bH = rhsf(1/(1+zi), 0, Om)*
-    return np.sqrt(Om/a*(1+delta)-Ok0 + OL0*a**2) 
 
 def rhs_sph(a,t, Om, zi, delta):
     Ok0 = (1+zi)*Om*delta *5/3
-    OL0 = 1-Om-Ok0 # *(1+zi)**3
-#    bH = rhsf(1/(1+zi), 0, Om)
+    OL0 = 1-Om-Ok0 
     return np.sqrt(Om/a*(1+delta)-Ok0 + OL0*a**2) #/bH
 
 Om = .3
 ts, a_from_t = a_from_t_for_delta(0., rhs_del)
-d1 = 7e-3
+d1 = 10
 ts, ad1 = a_from_t_for_delta(d1, rhs_del)
 ts, mad1 = a_from_t_for_delta(-d1, rhs_del)
-ts, as1 = a_from_t_for_delta(d1, rhs_sph)
-ts, mas1 = a_from_t_for_delta(-d1, rhs_sph)
+#ts, as1 = a_from_t_for_delta(d1, rhs_sph)
+#ts, mas1 = a_from_t_for_delta(-d1, rhs_sph)
 
-plt.plot(1/a_from_t(ts), mad1(ts)/a_from_t(ts)-1,'--',c=cycle[0],label=r"$\delta=-{:.1g}$".format(d1),alpha=.5)
-plt.plot(1/a_from_t(ts), ad1(ts)/a_from_t(ts)-1,c=cycle[0],label=r"$\delta={:.1g}$".format(d1),alpha=.5)
-plt.plot(1/a_from_t(ts), mas1(ts)/a_from_t(ts)-1,'--',c=cycle[1],label=r"$\delta=-{:.1g}$".format(d1),alpha=.5)
-plt.plot(1/a_from_t(ts), as1(ts)/a_from_t(ts)-1,c=cycle[1],label=r"$\delta={:.1g}$".format(d1),alpha=.5)
+plt.plot(1/a_from_t(ts), (mad1(ts)/a_from_t(ts))**3-1,'--',c=cycle[0],label=r"$a_\delta/a_b \delta/a_i=-{:.1g}$".format(d1),alpha=.5)
+plt.plot(1/a_from_t(ts), -((ad1(ts)/a_from_t(ts))**3-1),c=cycle[0],label=r"$a_b/a_\delta\, \delta/a_i={:.1g}$".format(d1),alpha=.5)
+#plt.plot(1/a_from_t(ts), mas1(ts)/a_from_t(ts)-1,'--',c=cycle[1],label=r"$\delta=-{:.1g}$".format(d1),alpha=.5)
+#plt.plot(1/a_from_t(ts), as1(ts)/a_from_t(ts)-1,c=cycle[1],label=r"$\delta={:.1g}$".format(d1),alpha=.5)
+
+plt.plot(1/a_from_t(ts),d1* a_from_t(ts),'-',c=cycle[2], alpha=.5, label=r"$\propto a$")
 
 plt.xscale("log")
-plt.xlim(1000,1)
-plt.ylim(-1.3,1.3)
+plt.yscale("log")
+plt.xlim(100,1)
+#plt.ylim(-1.3,1.3)
+plt.ylim(1e-2,10)
 plt.xlabel(r"$1+z$")
-plt.ylabel(r"${a_\delta}/{a_b}-1$")
+plt.ylabel(r"${a_\delta}/{a_b}$")
 plt.title(r"change of scale factor vs background $\Omega_m={:.3f}$".format(Om))
 #plt.loglog(1/solb,sol/solb,label=r"$\delta(z=99)=0.01$")
 plt.legend()
@@ -153,9 +158,9 @@ plt.savefig("../assets/growthfactor-inhomogeneous-as-function-of-a.png", dpi=150
 
 #%%
 
-d1 = 5e-4
-d2 = 1e-3
-d3 = 7e-3
+d1 = 0.5
+d2 = 1
+d3 = 7
 ts, ad1 = a_from_t_for_delta(d1, rhs_del)
 ts, mad1 = a_from_t_for_delta(-d1, rhs_del)
 ts, ad2 = a_from_t_for_delta(d2, rhs_del)
@@ -163,33 +168,82 @@ ts, mad2 = a_from_t_for_delta(-d2, rhs_del)
 ts, ad3 = a_from_t_for_delta(d3, rhs_del)
 ts, mad3 = a_from_t_for_delta(-d3, rhs_del)
 
-plt.plot(1/a_from_t(ts), mad3(ts)/a_from_t(ts)-1,'--',c=cycle[2],label=r"$\delta(z=999)=-{:.1g}$".format(d3))
-plt.plot(1/a_from_t(ts), mad2(ts)/a_from_t(ts)-1,'--',c=cycle[1],label=r"$\delta=-{:.1g}$".format(d2))
-plt.plot(1/a_from_t(ts), mad1(ts)/a_from_t(ts)-1,'--',c=cycle[0],label=r"$\delta=-{:.1g}$".format(d1))
-plt.plot(1/a_from_t(ts), ad1(ts)/a_from_t(ts)-1,c=cycle[0],label=r"$\delta={:.1g}$".format(d1))
-plt.plot(1/a_from_t(ts), -1*(mad1(ts)/a_from_t(ts)-1),'--',c=cycle[0],alpha=.9,lw=1)
+plt.plot(1/a_from_t(ts), (mad3(ts)/a_from_t(ts))**3-1,'--',c=cycle[2],label=r"$\delta/a_i=-{:.1g}$".format(d3))
+plt.plot(1/a_from_t(ts), (mad2(ts)/a_from_t(ts))**3-1,'--',c=cycle[1],label=r"$\delta/a_i=-{:.1g}$".format(d2))
+plt.plot(1/a_from_t(ts), (mad1(ts)/a_from_t(ts))**3-1,'--',c=cycle[0],label=r"$\delta/a_i=-{:.1g}$".format(d1))
+plt.plot(1/a_from_t(ts), (ad1(ts)/a_from_t(ts))**3-1,c=cycle[0],label=r"$\delta/a_i={:.1g}$".format(d1))
+plt.plot(1/a_from_t(ts), -1*((mad1(ts)/a_from_t(ts))**3-1),'--',c=cycle[0],alpha=.9,lw=1)
 
-plt.plot(1/a_from_t(ts), ad2(ts)/a_from_t(ts)-1,c=cycle[1],label=r"$\delta={:.1g}$".format(d2))
-plt.plot(1/a_from_t(ts), -1*(mad2(ts)/a_from_t(ts)-1),'--',c=cycle[1],alpha=.9,lw=1)
+plt.plot(1/a_from_t(ts), (ad2(ts)/a_from_t(ts))**3-1,c=cycle[1],label=r"$\delta/a_i={:.1g}$".format(d2))
+plt.plot(1/a_from_t(ts), -1*((mad2(ts)/a_from_t(ts))**3-1),'--',c=cycle[1],alpha=.9,lw=1)
 
-plt.plot(1/a_from_t(ts), ad3(ts)/a_from_t(ts)-1,c=cycle[2],label=r"$\delta={:.1g}$".format(d3))
-plt.plot(1/a_from_t(ts), -1*(mad3(ts)/a_from_t(ts)-1),'--',c=cycle[2],alpha=.9,lw=1)
+plt.plot(1/a_from_t(ts), (ad3(ts)/a_from_t(ts))**3-1,c=cycle[2],label=r"$\delta/a_i={:.1g}$".format(d3))
+plt.plot(1/a_from_t(ts), -1*((mad3(ts)/a_from_t(ts))**3-1),'--',c=cycle[2],alpha=.9,lw=1)
 
-plt.plot(1/a_from_t(ts), -(d1*a_from_t(ts)/1e-3),'--',c=cycle[0],alpha=.9,lw=1)
+plt.plot(1/a_from_t(ts), -(d1*a_from_t(ts)),'-.',c=cycle[0],alpha=.9,lw=2,label=r"$\propto a$")
+plt.plot(1/a_from_t(ts), (d1*a_from_t(ts)),'-.',c=cycle[0],alpha=.9,lw=2)
+plt.plot(1/a_from_t(ts), -(d2*a_from_t(ts)),'-.',c=cycle[1],alpha=.9,lw=2)
+plt.plot(1/a_from_t(ts), (d2*a_from_t(ts)),'-.',c=cycle[1],alpha=.9,lw=2)
+plt.plot(1/a_from_t(ts), -(d3*a_from_t(ts)),'-.',c=cycle[2],alpha=.9,lw=2)
+plt.plot(1/a_from_t(ts), (d3*a_from_t(ts)),'-.',c=cycle[2],alpha=.9,lw=2)
 
 
 plt.xscale("log")
+#plt.yscale("log")
 plt.xlim(1000,1)
-plt.ylim(-.3,.3)
+plt.ylim(-1.25,1.25)
+#plt.ylim(1e-3,.3)
 plt.xlabel(r"$1+z$")
-plt.ylabel(r"${a_\delta}/{a_b}-1$")
-plt.title(r"change of scale factor vs background $\Omega_m={:.1f}$".format(Om))#plt.loglog(1/solb,sol/solb,label=r"$\delta(z=99)=0.01$")
+plt.ylabel(r"${\delta=(a_\delta}/{a_b})^3-1$")
+plt.title(r"change of density vs background $\Omega_m={:.1f}$".format(Om))
+#plt.loglog(1/solb,sol/solb,label=r"$\delta(z=99)=0.01$")
 plt.legend()
 
 # %%
 
-#%%
+d1 = 0.5
+d2 = 1
+d3 = 7
+ts, ad1 = a_from_t_for_delta(d1, rhs_del)
+ts, mad1 = a_from_t_for_delta(-d1, rhs_del)
+ts, ad2 = a_from_t_for_delta(d2, rhs_del)
+ts, mad2 = a_from_t_for_delta(-d2, rhs_del)
+ts, ad3 = a_from_t_for_delta(d3, rhs_del)
+ts, mad3 = a_from_t_for_delta(-d3, rhs_del)
 
+plt.plot(1/a_from_t(ts), ((mad3(ts)/a_from_t(ts))**3-1)/(d3*a_from_t(ts)),'--',c=cycle[2],label=r"$\delta/a_i=-{:.1g}$".format(d3))
+plt.plot(1/a_from_t(ts), ((mad2(ts)/a_from_t(ts))**3-1)/(d2*a_from_t(ts)),'--',c=cycle[1],label=r"$\delta/a_i=-{:.1g}$".format(d2))
+plt.plot(1/a_from_t(ts), ((mad1(ts)/a_from_t(ts))**3-1)/(d1*a_from_t(ts)),'--',c=cycle[0],label=r"$\delta/a_i=-{:.1g}$".format(d1))
+plt.plot(1/a_from_t(ts), ((ad1(ts)/a_from_t(ts))**3-1)/(d1*a_from_t(ts)),c=cycle[0],label=r"$\delta/a_i={:.1g}$".format(d1))
+plt.plot(1/a_from_t(ts), 1*((mad1(ts)/a_from_t(ts))**3-1)/(d1*a_from_t(ts)),'--',c=cycle[0],alpha=.9,lw=1)
+
+plt.plot(1/a_from_t(ts), ((ad2(ts)/a_from_t(ts))**3-1)/(d2*a_from_t(ts)),c=cycle[1],label=r"$\delta/a_i={:.1g}$".format(d2))
+plt.plot(1/a_from_t(ts), 1*((mad2(ts)/a_from_t(ts))**3-1)/(d2*a_from_t(ts)),'--',c=cycle[1],alpha=.9,lw=1)
+
+plt.plot(1/a_from_t(ts), ((ad3(ts)/a_from_t(ts))**3+1)/(1+d3*a_from_t(ts)),c=cycle[2],label=r"$\delta/a_i={:.1g}$".format(d3))
+plt.plot(1/a_from_t(ts), 1*((mad3(ts)/a_from_t(ts))**3+1)/(1+d3*a_from_t(ts)),'--',c=cycle[2],alpha=.9,lw=1)
+
+#plt.plot(1/a_from_t(ts), -(d1*a_from_t(ts)),'-.',c=cycle[0],alpha=.9,lw=2,label=r"$\propto a$")
+#plt.plot(1/a_from_t(ts), (d1*a_from_t(ts)),'-.',c=cycle[0],alpha=.9,lw=2)
+#plt.plot(1/a_from_t(ts), -(d2*a_from_t(ts)),'-.',c=cycle[1],alpha=.9,lw=2)
+#plt.plot(1/a_from_t(ts), (d2*a_from_t(ts)),'-.',c=cycle[1],alpha=.9,lw=2)
+#plt.plot(1/a_from_t(ts), -(d3*a_from_t(ts)),'-.',c=cycle[2],alpha=.9,lw=2)
+#plt.plot(1/a_from_t(ts), (d3*a_from_t(ts)),'-.',c=cycle[2],alpha=.9,lw=2)
+
+
+plt.xscale("log")
+#plt.yscale("log")
+plt.xlim(1000,1)
+plt.ylim(-1.25,2.25)
+#plt.ylim(1e-3,.3)
+plt.xlabel(r"$1+z$")
+plt.ylabel(r"${\delta=(a_\delta}/{a_b})^3-1$")
+plt.title(r"change of density vs background $\Omega_m={:.1f}$".format(Om))
+#plt.loglog(1/solb,sol/solb,label=r"$\delta(z=99)=0.01$")
+plt.legend()
+
+#%%
+# ## 
 d1 = 5e-4
 d2 = 1e-3
 d3 = 7e-3
@@ -251,36 +305,59 @@ plt.plot(1/a_from_t(ts), ad2(ts),'--',c=cycle[1],label=r"$\delta(z=999)={:.1g}$"
 
 plt.xscale("log")
 plt.yscale("log")
-plt.xlim(100,1)
-plt.ylim(1e-2,2)
+plt.xlim(1000,1)
+plt.ylim(1e-3,2)
 plt.xlabel(r"$1+z$")
 plt.ylabel(r"$({a_\delta}/{a_b}-1)/\delta$")
 plt.title(r"change of scale factor vs background $\Omega_m={:.1f}$".format(Om))#plt.loglog(1/solb,sol/solb,label=r"$\delta(z=99)=0.01$")
 plt.legend()
 # %%
+## Growth Factor comparison
+
 
 a0 = [1e-3] # at a=1 we want da/dt=1 we can later get units from H0.
 zi = 999
 t = np.linspace(1e-6,5, 190000)
 ts=t
-sol = odeint(rhsf, 1e-3, ts, args= (Om, ) )
+sol = odeint(rhsf, a0, ts, args= (Om, ) )
 ts = ts[np.isfinite(sol.flatten())]
 sol = sol[np.isfinite(sol.flatten())].flatten()
-
 t_from_a = interp1d(sol,ts,bounds_error=None,fill_value="extrapolate")
+
 
 ctime = t_from_a(1)
 ft = np.array([1e-6,ctime])
-delt = -1*np.logspace(-7,-3,100)
+delt = -1*np.logspace(-4,1.6,100)
+
 
 fdel = np.array([])
 for delta in delt:
-    sol = odeint(rhs_del, 1e-3, ft, args= (Om, 999, delta))
-#    print(delta, sol[1]/(delta+1)**(-1/3))
+    sol = odeint(rhs_del, 1e-3, ft, args= (Om, 999, 1e-3*delta))
     fdel = np.append(fdel,sol[1])
 
-plt.plot(-delt*1e3,-(fdel**3-1)/delt/1e3)
+#plt.plot(-delt,-(fdel**3-1)/delt,'o')
+#plt.plot(-delt,-(fsphdel**3-1)/delt,'o')
+plt.plot(-delt,(fdel-1),'o')
+#plt.plot(-delt,fsphdel-1,'o')
+plt.xlabel(r"$\delta/a_i$")
 plt.xscale("log")
-#plt.yscale("log")
+plt.ylim(1e-4,1e2)
+plt.yscale("log")
+# %%
 
 # %%
+import veusz.embed as veusz
+
+g = veusz.Embedded('new win')
+g.EnableToolbar(enable=True)
+g.To( g.Add('page') )
+g.To( g.Add('graph') )
+g.SetData('x', np.arange(20))
+g.SetData('y', np.arange(20)**2)
+g.Add('xy')
+g.Zoom(0.5)
+
+g.WaitForClose()# %%
+
+# %%
+
