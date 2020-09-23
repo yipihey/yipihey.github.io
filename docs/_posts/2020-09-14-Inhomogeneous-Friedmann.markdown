@@ -2,7 +2,7 @@
 mathjax: true
 layout: post
 title:  "The Inhomogeneous Friedmann Universe"
-date:   2020-09-10
+date:   2020-09-14
 categories: fragments
 author: Tom
 ---
@@ -56,9 +56,43 @@ $$\Omega_{k,0} = {\delta \left[ a_i^3(\delta-6)(\Omega_{m,0}-1)- (\delta-15)\Ome
 The last approximation here is very accurate as all other terms have at least order $a_i^2$ or $\delta^2$ or even smaller. 
 So we can now compare now how different the scale factors evolve in the flat background Universe as compared to the one corresponding to the one with the slight early difference in density. 
 
-We can also define the parameter describing the evolution as $\delta_0\equiv \delta(z)/a= \delta(z) (1+z)$ so that we can write:
+We can also define the parameter describing the evolution as $\delta_0\equiv \delta(z)/a= \delta(z) (1+z)$, which we refer to as comoving density contrast, so that we can write:
 
 $$\Omega_{k,0} = {\delta_0 \left[ a_i^3(\delta_0/a_i-6)(\Omega_{m,0}-1)- (\delta_0/a_i-15)\Omega_{m,0} \right] \over 9}
   \approx \frac{5}{3}\Omega_{m,0}\delta_0.$$
 
+
+Let us denote variables with a subcript $\delta$ for the perturbed universe and calculating the evolution of the scale factor $a_\delta$ associated with it now proceed using
+
+$$
+H_\delta(a_\delta)^2 = \frac{\Omega_{m,0}}{a_\delta^3} - \frac{5}{3}\frac{\Omega_{m,0}}{a_\delta^2}\delta_0 + \Omega_{\Lambda,0}
+$$
+
+and ${da_\delta}/{dt} = a_\delta H(a_\delta)$.  
+
+For the background universe which has the same $\Omega_{m,0}$ and $\Omega_{\Lambda,0}$ but no curvature we have 
+
+$$
+H(a)^2 = \frac{\Omega_{m,0}}{a^3} + \Omega_{\Lambda,0}
+$$
+
+and $da = a H_b(a) dt$.
+We can use this to replace the $dt$ in our perturbed universe evolution equation, ${da_\delta}  = a_\delta H(a_\delta){dt}$,  with $da$ allowing us to integrate 
+
+$$
+\frac{da_\delta}{da}=\frac{a_\delta}{a}\frac{H_\delta(a_\delta)}{H(a)}
+$$
+
+| ![volume-evolution](/assets/deltaVoV-evolution-inhomogeneous-as-function-of-opz.png) |
+|:--:|
+| *Evolution of the relative change of volume dV/V (over- and under-densities) as a function of redshift for a few values of comoving delta. The dot-dashed lines of the same color show a linear evolution proportional to the scale factor. The thin dotted lines mirror the evolution of the expanding (under-dense) regions to the low volume (over-densities) to help show the asymmetries between the over- vs under-dense evolution.* |
+
+
+We can look at the relation also for its dependence on the comoving density contrast for a few different redshifts:
+
+| ![volume-evolution-vs-delta0](/assets/deltaVoV-evolution-inhomogeneous-as-function-of-delta0.png) |
+|:--:|
+| *Evolution of the relative change of volume dV/V (over- and under-densities) as a function of the initial comoving density contrast for a few different redshifts. Again we note the assymetry especially at low redshifts and large comoving density contrasts.* |
+
+You may also look at the [full code that made the plots above](/posts_code/InhomogeneousFriedmannEasy.py). It will also require this [matplotlib style file](/posts_code/Modified5308.mplstyle).
 
